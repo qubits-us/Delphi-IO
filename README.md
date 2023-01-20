@@ -1,7 +1,7 @@
 # Delphi-IO
 Inputs and Outputs
 
-Testing a home brewed 8 digital inputs, 8 relays, 8 input registers and 8 holding regsters controller.
+Testing a home brewed controller; 8 digital inputs, 8 relays, 8 input registers and 8 holding regsters.
 
 using Modbus RTU
 
