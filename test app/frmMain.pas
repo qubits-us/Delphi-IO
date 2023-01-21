@@ -221,9 +221,6 @@ end;
 
 
 procedure TMainFrm.UpdateInputReg(Data:word;Reg:Byte);
-var
-MaskBit:byte;
-i:integer;
 begin
  //
  if Reg<Length(InputRegisters) then
@@ -231,9 +228,6 @@ begin
 end;
 
 procedure TMainFrm.UpdateHoldingReg(Data:word;Reg:Byte);
-var
-MaskBit:byte;
-i:integer;
 begin
  //
  if Reg<Length(HoldingRegisters) then
@@ -242,7 +236,6 @@ end;
 
 procedure TMainFrm.UpdateInputRegs(Data:array of word);
 var
-MaskBit:byte;
 i,j:integer;
 begin
  //
@@ -276,7 +269,6 @@ end;
 
 procedure TMainFrm.UpdateHoldingRegs(Data:array of word);
 var
-MaskBit:byte;
 i,j:integer;
 begin
  //
@@ -357,9 +349,6 @@ end;
 
 
 procedure TMainFrm.CoilResponse(Coil,State:Word);
-var
-MaskBit:byte;
-i:integer;
 begin
  //
  if Coil < Length(StateCoils) then
@@ -859,7 +848,7 @@ if Size>0 then
             end;
 
          end;
-       2:begin  //recieving a word 2 bytes..
+       2:begin  //receiving 2 words 4 bytes..
 
             RecvBytes:=RecvBytes+[pB^];
             RecvRaw:=RecvRaw+Chr(pB^);
@@ -878,16 +867,16 @@ if Size>0 then
          end;
        3:begin //recv data len byte
             RecvDataLen:=pB^;
-          RecvBytes:=RecvBytes+[pB^];
+            RecvBytes:=RecvBytes+[pB^];
             RecvRaw:=RecvRaw+Chr(pB^);
-          recStr:=recStr+' Data Len:'+IntToHex(pB^)+' Data:';
+            recStr:=recStr+' Data Len:'+IntToHex(pB^)+' Data:';
             Inc(RecvState);
          end;
        4:begin  //rec the datalen
           if RecvDataLen>0 then
             begin
-            RecvBytes:=RecvBytes+[pB^];
-            RecvRaw:=RecvRaw+Chr(pB^);
+             RecvBytes:=RecvBytes+[pB^];
+             RecvRaw:=RecvRaw+Chr(pB^);
              recStr:=RecStr+IntToHex(pB^);
              Dec(RecvDataLen);
 
@@ -939,7 +928,7 @@ if Size>0 then
                             end;
                READ_INPUTREGS:begin
                             //same as holding registers
-                            if not Odd(RecvBytes[2]) then
+                             if not Odd(RecvBytes[2]) then
                               begin
                                 SetLength(tmpWordArray,(RecvBytes[2] div 2));
                                  j:=3;
