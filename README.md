@@ -17,3 +17,7 @@ The Uno Completed.
 
 
 ![UnoCompleted](https://user-images.githubusercontent.com/97798670/213828547-462678ce-2b9c-4ea1-825c-491ad395e2be.jpg)
+
+
+<br><br>
+Delphi is a registered trademark of <a href="https://www.embarcadero.com/products/delphi" rel="nofollow">Embarcadero, Inc.</a>
