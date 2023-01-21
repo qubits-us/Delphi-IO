@@ -500,18 +500,11 @@ begin
   AddLo:=0;
   AddHi:=8;
 
-tmpCRC:=0;
-SetLength(tmpB,6);
-tmpB[0]:=1;
-tmpB[1]:=READ_INPUTS;
-tmpB[2]:=hi(AddLo);
-tmpB[3]:=lo(AddLo);
-tmpB[4]:=hi(AddHi);
-tmpB[5]:=lo(AddHi);
-tmpCRC:=calculateCRC(tmpB);
-setLength(tmpB,8);
-tmpB[6]:=lo(tmpCRC);
-tmpB[7]:=hi(tmpCRC);
+
+tmpB:=RTU_Buff(1,READ_INPUTS,AddLo,AddHi,nil);
+
+
+
 if ComPort.Open then
   begin
     WritePort(tmpB);
@@ -643,7 +636,7 @@ begin
 
      for I := 0 to 7 do
        begin
-       if tCheckBox(RelayLst[i]).Checked then
+       if not tCheckBox(RelayLst[i]).Checked then
         relayByte:=relayByte or MaskBit;
         if i<7 then  //only need 7 moves
         MaskBit:=(MaskBit shl 1);
@@ -893,10 +886,13 @@ if Size>0 then
          end;
        5:begin  //last byte crc hi, completes the packet
           recStr:=recStr+' CRC HI:'+IntToHex(pB^);
-          mDisplay.Lines.Add(recStr);
           RecvBytes:=RecvBytes+[pB^];
           RecvRaw:=RecvRaw+Chr(pB^);
-          mDisplay.Lines.Add('<<'+buff2Hex(RecvBytes,':'));
+          if not ((RecvFunc=READ_INPUTS)and(Polling)) then
+           begin
+           mDisplay.Lines.Add(recStr);
+           mDisplay.Lines.Add('<<'+buff2Hex(RecvBytes,':'));
+           end;
           //check CRC
           if (RecvBytes[Length(RecvBytes)-2]=hi(RecvCRC)) and
              (RecvBytes[Length(RecvBytes)-1]=lo(RecvCRC)) then
