@@ -5,7 +5,7 @@ Testing a home brewed controller; 8 digital inputs, 8 relays, 8 input registers 
 
 using Modbus RTU
 
-Test app compiled with Delphi 11.2 , Turbo Power AsyncPro available on github.
+Test app compiled with Delphi 11.2 , TurboPak AsyncPro available on github.
 
 
 
