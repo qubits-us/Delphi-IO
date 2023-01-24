@@ -108,15 +108,16 @@ void setup() {
   oled.set2X(); 
   oled.println("Modbus RTU");
   oled.set1X();
-  oled.println();
+ // oled.println();
 //save the col quicker updates later..
-  col0 = oled.strWidth("Inputs: ");  
-  oled.println("        12345678");
-  oled.println("Inputs: 00000000");
-  oled.println("Relays: 00000000");
+  col0 = oled.strWidth("Input:");  
+  oled.println("      1 2 3 4 5 6 7 8");
+  oled.println("Input:0 0 0 0 0 0 0 0");
+  oled.println();
+  oled.println("Relay:0 0 0 0 0 0 0 0");
   oled.println();
   oled.println();  
-  oled.println("    QUBITS.US");  
+  oled.println("      QUBITS.US");  
 }
 
 void loop() {
@@ -132,8 +133,10 @@ void displayRelays(){
   String relayStr ="";
 for (int i=0;i<8;i++)
 {
-  if (relays[i]) {relayStr=relayStr+"0";} 
-          else {relayStr=relayStr+"X";} 
+  if (relays[i]) {relayStr = relayStr+"0";} 
+          else {relayStr = relayStr+"X";} 
+ if (i<7){relayStr = relayStr+" ";}
+          
 }
   
   oled.setCursor(col0, 5);
@@ -145,11 +148,12 @@ void displayInputs(){
   String inputStr ="";
 for (int i=0;i<8;i++)
 {
-  if (dinputs[i]) {inputStr=inputStr+"X";} 
-          else {inputStr=inputStr+"0";} 
+  if (dinputs[i]) {inputStr = inputStr+"X";} 
+          else {inputStr = inputStr+"0";} 
+  if (i<7){inputStr = inputStr+" ";}          
 }
 
-  oled.setCursor(col0, 4);
+  oled.setCursor(col0, 3);
   oled.print(inputStr);
   updateInput = false;       
 }
