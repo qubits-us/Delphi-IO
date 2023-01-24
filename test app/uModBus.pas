@@ -17,8 +17,8 @@ type
 const
   MB_BCAST_ID = 0;
   CRC_KEY = $A001;
-  COIL_OFF = $FF00;
-  COIL_ON = $0000;
+  COIL_OFF = $0000;
+  COIL_ON = $FF00;
 
 // ModBus functions
 const

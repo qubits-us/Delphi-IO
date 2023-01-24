@@ -62,6 +62,7 @@ type
     cbR8: TCheckBox;
     btnSetMultiRelay: TButton;
     btnWriteHolding: TButton;
+    tmrWDP: TTimer;
     procedure ComPortPortClose(Sender: TObject);
     procedure ComPortPortOpen(Sender: TObject);
     procedure DataPackPacket(Sender: TObject; Data: Pointer; Size: Integer);
@@ -94,6 +95,7 @@ type
     procedure btnSetMultiRelayClick(Sender: TObject);
     procedure sgRegsGetEditMask(Sender: TObject; ACol, ARow: Integer; var Value: string);
     procedure btnWriteHoldingClick(Sender: TObject);
+    procedure tmrWDPTimer(Sender: TObject);
   private
     { Private declarations }
   public
@@ -122,6 +124,7 @@ var
   HoldingRegisters:Array[0..7] of word=(0,0,0,0,0,0,0,0);
   OutCrit:TCriticalSection;
   Polling:boolean;
+  TimedOut:boolean;
   //func 3 addr 211 get adams module name
 
 implementation
@@ -158,6 +161,7 @@ begin
   OutputLst:=tComponentList.Create(False);
   RelayLst:=tComponentList.Create(False);
   Polling:=False;
+  TimedOut:=False;
 
   //put the screen controls in lists for quicker access
   InputLst.Add(shpInput1);
@@ -516,6 +520,35 @@ if ComPort.Open then
 
 end;
 
+
+
+
+procedure TMainFrm.tmrWDPTimer(Sender: TObject);
+begin
+//packet has timed out!!??
+
+   tmrWDP.Enabled:=False;
+   mDisplay.Lines.Add('>> Packet Timed Out');
+
+
+
+
+          //reset for next packet
+          RecvState:=0;
+          RecvDataLen:=0;
+          recStr:='';
+          RecvState:=0;
+          RecvDataLen:=0;
+          SetLength(RecvBytes,0);
+          RecvCRC:=0;
+          RecvRaw:='';
+          RecvWordCount:=0;
+
+
+
+end;
+
+//Watch dog for the packet
 procedure TMainFrm.RelayOff(RelayNum: Word);
 var
 SlaveId:byte;
@@ -546,6 +579,7 @@ if not Comport.Open then
   begin
   ComPort.ComNumber:=StrToInt(edPort.Text);
   ComPort.Open:=true;
+  DataPack.Enabled:=true;
   mDisplay.Lines.Add('Port Open');
   end;
 
@@ -636,7 +670,7 @@ begin
 
      for I := 0 to 7 do
        begin
-       if not tCheckBox(RelayLst[i]).Checked then
+       if tCheckBox(RelayLst[i]).Checked then
         relayByte:=relayByte or MaskBit;
         if i<7 then  //only need 7 moves
         MaskBit:=(MaskBit shl 1);
@@ -819,6 +853,7 @@ if Size>0 then
           RecvRaw:=RecvRaw+Chr(pB^);
           recStr:='Address:'+IntToHex(pB^);
          Inc(RecvState);
+         tmrWDP.Enabled:=True;//enable watch dog timer..
          end;
        1:begin //function or error
           if pB^<MBE_ERROR then
@@ -888,6 +923,7 @@ if Size>0 then
           recStr:=recStr+' CRC HI:'+IntToHex(pB^);
           RecvBytes:=RecvBytes+[pB^];
           RecvRaw:=RecvRaw+Chr(pB^);
+          tmrWDP.Enabled:=false;//disbale watchdog, got our packet..
           if not ((RecvFunc=READ_INPUTS)and(Polling)) then
            begin
            mDisplay.Lines.Add(recStr);
@@ -981,7 +1017,7 @@ end;
 
 procedure TMainFrm.DataPackTimeout(Sender: TObject);
 begin
-mDisplay.Lines.Add('DataPack Timed Out');
+mDisplay.Lines.Add('DataPack Timed Out, you must be sleeping..');
 end;
 
 

@@ -446,4 +446,10 @@ object MainFrm: TMainFrm
     OnTimer = tmrPollTimer
     Left = 8
   end
+  object tmrWDP: TTimer
+    Enabled = False
+    OnTimer = tmrWDPTimer
+    Left = 72
+    Top = 40
+  end
 end
