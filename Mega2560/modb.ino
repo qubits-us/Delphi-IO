@@ -43,8 +43,8 @@ uint8_t col0 = 0;
 
 byte buf[bufSize];
 //relay coil states
-boolean relays[numRelays] = {1, 1, 1, 1, 1, 1, 1, 1};
-boolean dinputs[numInputs] = {1, 1, 1, 1, 1, 1, 1, 1};
+boolean relays[numRelays] = {0, 0, 0, 0, 0, 0, 0, 0};
+boolean dinputs[numInputs] = {0, 0, 0, 0, 0, 0, 0, 0};
 boolean relaysOnline = true;
 //do we need to update display
 boolean updateRelay = false;
@@ -74,7 +74,11 @@ void setup() {
 
   for (int i=0;i<numInputs;i++)
   {
-   pinMode(inputPins[i], INPUT_PULLUP);
+   digitalWrite(inputPins[i],LOW); 
+   pinMode(inputPins[i], INPUT);
+   //set the relay pins high before switching to output..
+   //stops the relays from chattering, they are low triggered..
+   digitalWrite(relayPins[i],HIGH);
    pinMode(relayPins[i], OUTPUT);
   }    
     
@@ -159,7 +163,7 @@ Serial.println(address,DEC);
 */
 
 if (relaysOnline){  
-return digitalRead(relayPins[address]);
+return !digitalRead(relayPins[address]);
 } else return 0;
 }
 
@@ -171,21 +175,25 @@ Serial.print(" Value:");
 Serial.println(value,DEC);
 */
 if (relaysOnline){
-  digitalWrite(relayPins[address],value);
-  relays[address] = value;
+  digitalWrite(relayPins[address],!value);
+  relays[address] = !value;
   updateRelay = true;
+ /* 
+  Serial.print("relays:");
+  Serial.println(relays[address],DEC);
+ */
   }  
   return true;
 }
 
 char inputRead(unsigned int address) {
 //see if we need to update screen
-if (!digitalRead(inputPins[address]) != dinputs[address]){
-  dinputs[address]=!digitalRead(inputPins[address]);
+if (digitalRead(inputPins[address]) != dinputs[address]){
+  dinputs[address]=digitalRead(inputPins[address]);
   updateInput = true;    
 }
   
-  return !digitalRead(inputPins[address]);//notted for the pull up..
+  return digitalRead(inputPins[address]);//notted for the pull up..
 }
 
 
@@ -201,6 +209,7 @@ long regRead(unsigned int address) {
 
 boolean regWrite(word address, word value) {
   regs[address]= value;
+/*  
   if (address == 0)
 {
 shiftOut(dataPinA,clockPinA,LSBFIRST,value);//low byte
@@ -211,6 +220,7 @@ else
 shiftOut(dataPinB,clockPinB,LSBFIRST,value);//low byte
 shiftOut(dataPinB,clockPinB,LSBFIRST,(value>>8));//high byte
 }  
+*/
   return true;
 }
 
